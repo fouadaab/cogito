@@ -1,3 +1,11 @@
+# Custom Java Code
+cogitopublic
+
+# Input/Output from main script
+# Sensitive info
+data
+output
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
