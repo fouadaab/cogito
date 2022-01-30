@@ -9,8 +9,8 @@ class Data():
     TODO: Add Dodstring
     """
     def __init__(self, cwd: str):
-        data_file = f"{PathNames.FACTURES}.csv"
-        self.csv_path = os.path.abspath(
+        data_file = f"{PathNames.FACTURES}.xls"
+        self.xls_path = os.path.abspath(
             os.path.join(
                 cwd,
                 PathNames.DATA_FOLDER,
@@ -33,9 +33,8 @@ class Data():
         """
         TODO: Add Docstring
         """
-        df = pd.read_csv(
-                self.csv_path,
-                infer_datetime_format=True,
+        df = pd.read_excel(
+                self.xls_path,
                 dtype=self.column_types,
                 parse_dates=self.parse_dates,
                 date_parser=self.date_parser

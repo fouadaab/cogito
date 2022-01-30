@@ -5,7 +5,7 @@ __all__ = [
     "PathNames",
     "ColumnNames",
     "GetColumnToType",
-    "EmailCreds",
+    "EmailAttributes",
 ]
 
 class PathNames(str, enum.Enum):
