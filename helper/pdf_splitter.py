@@ -1,22 +1,35 @@
 from PyPDF2 import PdfFileWriter, PdfFileReader
 from typing import List
+import helper.class_enumerators as class_enumerators
+import pandas
 import re
+import os
 
 class PdfWriter():
+    """
+    TODO: update not_found after inital DEV phase
+    """
     not_found: List[str]
 
     def __init__(
         self,
-        file_name: str,
-        names: List[str],
-        ids: List[str],
+        cwd: str,
+        names: pandas.Series,
+        ids: pandas.Series,
     ):
-        self.file_name = file_name
+        self.cwd = cwd
+        self.file_name = os.path.abspath(
+            os.path.join(
+                self.cwd,
+                class_enumerators.PathNames.DATA_FOLDER,
+                f"{class_enumerators.PathNames.PDF_FILE}.pdf",
+            )
+        )
         self.names = names
         self.ids = ids
         self.getPagebreakList()
 
-    def getPagebreakList(self) -> List[str]:
+    def getPagebreakList(self) -> None:
 
         not_found = list()
         pdf_file = PdfFileReader(self.file_name)
@@ -33,7 +46,13 @@ class PdfWriter():
             pattern = rf"(?:{name} \({id}\))"
 
             if re.findall(pattern, Text):
-                with open(f"/home/johndoe/Documents/test codes/handball_accounting_automation/ouput/PDFs/Facture-{name}-{id}.pdf", "wb") as outputStream:
+                with open(
+                    os.path.join(
+                        self.cwd,
+                        class_enumerators.PathNames.PDF_FOLDER,
+                        f"Facture-{name}-{id}.pdf"
+                    ),
+                    "wb") as outputStream:
                     output.write(outputStream)
             else:
                 not_found.append(f"{name}_{id}")
@@ -41,30 +60,3 @@ class PdfWriter():
         self.not_found = not_found
 
         return None
-
-if __name__ == '__main__':
-    
-    names = [
-        "GRIBI Alain",
-        "KUPFRSCHMID Sophie & Denis",
-        "RAMEL Armand",
-        "FREI Maurice",
-        "DA SILVA André",
-        "DUTASTA Fabien",
-        "HARRINGTON Rodney",
-        ]
-    ids = [
-        3234,
-        3281,
-        3222,
-        3241,
-        3583,
-        3580,
-        3582,
-    ]
-    write_pdfs = PdfWriter(
-        "/home/johndoe/Documents/test codes/handball_accounting_automation/data/DOC4965810388239128821.pdf",
-        names,
-        ids,
-    )
-    print(write_pdfs.not_found)

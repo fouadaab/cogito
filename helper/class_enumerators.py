@@ -1,16 +1,12 @@
 import enum
 from typing import NamedTuple
 
-__all__ = [
-    "PathNames",
-    "ColumnNames",
-    "GetColumnToType",
-    "EmailAttributes",
-]
 
 class PathNames(str, enum.Enum):
     DATA_FOLDER = "data"
-    FACTURES = "factures_dev"
+    PDF_FOLDER = "output/PDFs"
+    EXCEL_FILE = "factures_dev"
+    PDF_FILE = "All_PDFs"
 
 class ColumnNames(str, enum.Enum):
     SAISON = 'Saison'
@@ -79,5 +75,9 @@ class GetColumnToType(enum.Enum):
 class EmailAttributes(str, enum.Enum):
     NAMESPACE = "hotmail"
     ENTRY = "frank.nore@hotmail.com"
-    DEV_RECIPIENT = "samolo_001@hotmail.com"
-    PATH_TO_PDF = "/home/johndoe/Documents/test codes/handball_accounting_automation/data/CertificateOfCompletion.pdf"
+    SENDER = "Susana Freire"
+
+class LibelleToStr(str, enum.Enum):
+    COTISATION = "first sequence"
+    TRANCHE = "second sequence"
+    ARTICLE = "third sequence"
