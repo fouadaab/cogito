@@ -41,17 +41,25 @@ class Email():
             return LibelleToStr.ARTICLE
         raise ValueError(f"Unexpected value {x} in Column {ColumnNames.LIBELLE}")
 
+    def conditional_complement(self, x: str) -> str:
+
+        complement = '\n'
+    
+        if self.regex_match(x) == LibelleToStr.COTISATION:
+            complement += "\nSi jamais vous deviez faire face à des difficultés financières, je vous remercie de bien vouloir prendre contact, en toute confidentialité, \
+            avec moi ou l'un des membres du comité et nous vous orienterons alors vers une association à même de vous aider financièrement.\n"
+            return complement
+        
+        return complement
+
     def get_message(self):
         message = f'''
         Bonjour, 
 
         Je me permets de vous contacter car le HBC Nyon est toujours en attente du paiement de la facture N° {self.record[ColumnNames.FACTURE]} \
             d'un montant de CHF {self.record[ColumnNames.MONTANT_A_PAYER]},-- (dont vous trouverez une copie en pièce jointe) et relative à la \
-                {self.regex_match(self.record[ColumnNames.LIBELLE])} {self.record[ColumnNames.SAISON]}. \n
-
-        Si jamais vous deviez faire face à des difficultés financières, je vous remercie de bien vouloir prendre contact, en toute confidentialité, \
-            avec moi ou l'un des membres du comité et nous vous orienterons alors vers une association à même de vous aider financièrement. \n
-
+                {self.regex_match(self.record[ColumnNames.LIBELLE])} {self.record[ColumnNames.SAISON]}. \
+                    {self.conditional_complement(self.record[ColumnNames.LIBELLE])}
         Vous remerciant par avance de votre compréhension et de votre intervention et restant bien évidemment à votre disposition, \
             je vous prie de bien vouloir agréer l'expression de mes sincères salutations. \n
 
