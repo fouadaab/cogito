@@ -26,8 +26,12 @@ class Data():
             class_enumerators.ColumnNames.PROCHAINE_ECHEANCE,
             class_enumerators.ColumnNames.PAYE_LE,
         ]
-        self.date_parser = lambda x: pd.to_datetime(x, format='%d.%m.%Y')
-        self.date_diff = lambda x: (datetime.datetime.today() - x).days
+        
+    def date_parser(self, x: str) -> datetime.datetime:
+        return pd.to_datetime(x, format='%d.%m.%Y')
+    
+    def date_diff(self, x: datetime.datetime) -> int:
+         return (datetime.datetime.today() - x).days
 
     def read_data(self) -> pd.DataFrame:
         """

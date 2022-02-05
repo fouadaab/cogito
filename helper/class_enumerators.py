@@ -76,8 +76,10 @@ class EmailAttributes(str, enum.Enum):
     NAMESPACE = "hotmail"
     ENTRY = "frank.nore@hotmail.com"
     SENDER = "Susana Freire"
+    ROLE = "Trésorière HBC Nyon"
 
 class LibelleToStr(str, enum.Enum):
-    COTISATION = "first sequence"
-    TRANCHE = "second sequence"
-    ARTICLE = "third sequence"
+    TRANCHE = 'tranche'
+    TRANCHE_DE = TRANCHE + ' ' + 'de'
+    COTISATION = "la cotisation annuelle"
+    ARTICLE = "votre achat"

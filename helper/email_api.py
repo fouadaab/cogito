@@ -2,9 +2,8 @@ import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-# pip install keyring
-# pip install --upgrade --force-reinstall cffi
 from helper.class_enumerators import EmailAttributes, ColumnNames, LibelleToStr, PathNames
+from typing import Callable
 import keyring
 import pandas
 import re
@@ -29,26 +28,38 @@ class Email():
         """
         self.cwd = cwd
 
+    def check_condition(self, record: pandas.Series) -> Callable:
+        """
+        TODO: Add Docstring
+        """
+        self.record = record
+
+        if self.record[ColumnNames.OVERDUE] >= 30:
+            return self.send_email()
+        else:
+            return self.no_email()
+
     def regex_match(self, x: str) -> str:
         """
         TODO: Add docstring
         """
         if re.match(r'^Cotisations.*', x):
-            return LibelleToStr.COTISATION
+            return LibelleToStr.COTISATION + " " + self.record[ColumnNames.SAISON]
         elif re.match(r'[A-a+Z-z+è+ ]+Cotisations.*', x):
-            return LibelleToStr.TRANCHE
-        elif lambda x: re.match(r'.*article$', x):
+            return "la " + self.record[ColumnNames.LIBELLE].replace(LibelleToStr.TRANCHE, LibelleToStr.TRANCHE_DE).lower()
+        elif re.match(r'.*article$', x):
             return LibelleToStr.ARTICLE
+        
         raise ValueError(f"Unexpected value {x} in Column {ColumnNames.LIBELLE}")
 
     def conditional_complement(self, x: str) -> str:
-
+        """
+        TODO: Add docstring
+        """
         complement = '\n'
     
-        if self.regex_match(x) == LibelleToStr.COTISATION:
-            complement += "\nSi jamais vous deviez faire face à des difficultés financières, je vous remercie de bien vouloir prendre contact, en toute confidentialité, \
-            avec moi ou l'un des membres du comité et nous vous orienterons alors vers une association à même de vous aider financièrement.\n"
-            return complement
+        if self.regex_match(x) != LibelleToStr.ARTICLE:
+            complement += "\nSi jamais vous deviez faire face à des difficultés financières, je vous remercie de bien vouloir prendre contact, en toute confidentialité, avec moi ou l'un des membres du comité et nous vous orienterons alors vers une association à même de vous aider financièrement.\n"
         
         return complement
 
@@ -56,59 +67,58 @@ class Email():
         message = f'''
         Bonjour, 
 
-        Je me permets de vous contacter car le HBC Nyon est toujours en attente du paiement de la facture N° {self.record[ColumnNames.FACTURE]} \
-            d'un montant de CHF {self.record[ColumnNames.MONTANT_A_PAYER]},-- (dont vous trouverez une copie en pièce jointe) et relative à la \
-                {self.regex_match(self.record[ColumnNames.LIBELLE])} {self.record[ColumnNames.SAISON]}. \
-                    {self.conditional_complement(self.record[ColumnNames.LIBELLE])}
-        Vous remerciant par avance de votre compréhension et de votre intervention et restant bien évidemment à votre disposition, \
-            je vous prie de bien vouloir agréer l'expression de mes sincères salutations. \n
+        Je me permets de vous contacter car le HBC Nyon est toujours en attente du paiement de la facture N° {self.record[ColumnNames.FACTURE]} d'un montant de CHF {self.record[ColumnNames.MONTANT_A_PAYER]}-- (dont vous trouverez une copie en pièce jointe) et relative à {self.regex_match(self.record[ColumnNames.LIBELLE])}. {self.conditional_complement(self.record[ColumnNames.LIBELLE])}
+        Vous remerciant par avance de votre compréhension et de votre intervention et restant bien évidemment à votre disposition, je vous prie de bien vouloir agréer l'expression de mes sincères salutations. \n
 
-        {EmailAttributes.SENDER}
+        {EmailAttributes.SENDER} - {EmailAttributes.ROLE}
         '''
         return message
 
-    def send_email(self, record: pandas.Series) -> None:
+    def send_email(self) -> None:
         """
         TODO: Add Docstring
         """
-        self.record = record
 
-        s = smtplib.SMTP("smtp.outlook.com", 587) # Change smtp for Outlook
-        s.starttls()
-        s.login(cred.username, cred.password)
+        with smtplib.SMTP("smtp.outlook.com", 587) as s:  # Change smtp for Outlook
+            s.starttls()
+            s.login(cred.username, cred.password)
 
-        msg = MIMEMultipart() # create a message
+            msg = MIMEMultipart() # create a message
 
-        # add in the actual person name to the message template
-        message = self.get_message()
+            # add in the actual person name to the message template
+            message = self.get_message()
 
-        # setup the parameters of the message
-        msg['From']=cred.username
-        msg['To']=self.record[ColumnNames.EMAIL]
-        msg['Subject']=f"HBC Nyon - Retard de paiement {self.record[ColumnNames.MEMBRE]}"
+            # setup the parameters of the message
+            msg['From']=cred.username
+            msg['To']=self.record[ColumnNames.EMAIL]
+            msg['Subject']=f"HBC Nyon - Retard de paiement {self.record[ColumnNames.MEMBRE]}"
 
-        # Set up attachment folder
-        attachment = os.path.abspath(
-            os.path.join(
-                self.cwd,
-                PathNames.PDF_FOLDER,
-                f"Facture-{self.record[ColumnNames.MEMBRE]}-{self.record[ColumnNames.NUMERO]}.pdf",
+            # Set up attachment folder
+            attachment = os.path.abspath(
+                os.path.join(
+                    self.cwd,
+                    PathNames.PDF_FOLDER,
+                    f"Facture-{self.record[ColumnNames.MEMBRE]}-{self.record[ColumnNames.NUMERO]}.pdf",
+                )
             )
-        )
 
-        # add in the message body
-        msg.attach(MIMEText(message, 'plain'))
+            # add in the message body
+            msg.attach(MIMEText(message, 'plain'))
 
-        # attach pdf to email
-        with open(attachment, "rb") as f:
-            attach = MIMEApplication(f.read(),_subtype="pdf")
-        attach.add_header('Content-Disposition', 'attachment', filename=attachment.split('/')[-1])
-        msg.attach(attach)
+            # attach pdf to email
+            with open(attachment, "rb") as f:
+                attach = MIMEApplication(f.read(),_subtype="pdf")
+            attach.add_header('Content-Disposition', 'attachment', filename=attachment.split('/')[-1])
+            msg.attach(attach)
 
-        # send the message via the server set up earlier.
-        s.send_message(msg)
+            # send the message via the server set up earlier.
+            s.send_message(msg)
 
-        # Terminate the SMTP session and close the connection
-        s.quit()
+            print(f"Reminder sent to {self.record[ColumnNames.MEMBRE]}")
 
         return None
+
+    def no_email(self):
+        print(
+            f"No reminder needed for {self.record[ColumnNames.MEMBRE]} - Skipping"
+        )

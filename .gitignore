@@ -6,6 +6,9 @@ cogitopublic
 data
 output
 
+# Info file (virtualenv)
+virtual_env_ubuntu_20
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

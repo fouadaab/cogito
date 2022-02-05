@@ -18,10 +18,15 @@ if __name__ == "__main__":
     print(f"Members for which we could not generate a PDF invoice: {write_pdfs.not_found}")
 
     # Send out emails to each overdue member
-    """
-    TODO: Only send based on OVERDUE column (conditional)
-    """
     email_object = email_api.Email(cwd)
-    df = df.apply(lambda x: email_object.send_email(x), axis=1)
+    df = df.apply(lambda x: email_object.check_condition(x), axis=1)
 
     print("Successfully Completed Automation Script")
+
+
+# TODOS - Improvements:
+# 0. method not lambda (not serializable) -> implemented
+# 1. firebase (google) i.o sqlite (record tracking)
+# 2. with context email class -> implemented
+# 3. path lib (file/folder path)
+# 4. string lib (message)
