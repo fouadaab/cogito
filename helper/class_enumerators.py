@@ -83,3 +83,7 @@ class LibelleToStr(str, enum.Enum):
     TRANCHE_DE = TRANCHE + ' ' + 'de'
     COTISATION = "la cotisation annuelle"
     ARTICLE = "votre achat"
+
+class FireBase(str, enum.Enum):
+    PROJECT_ID = 'cogito-accounting'
+    DATETIME_FORMAT = "%d/%m/%Y %H:%M:%S"

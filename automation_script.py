@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
 # TODOS - Improvements:
 # 0. method not lambda (not serializable) -> implemented
-# 1. firebase (google) i.o sqlite (record tracking)
+# 1. firebase (google) i.o sqlite (record tracking) -> Implementing on 06/02/2022
 # 2. with context email class -> implemented
 # 3. path lib (file/folder path)
 # 4. string lib (message)
