@@ -9,37 +9,37 @@ class PathNames(str, enum.Enum):
     PDF_FILE = "All_PDFs"
 
 class ColumnNames(str, enum.Enum):
-    SAISON = 'Saison'
-    DATE_VALEUR = 'Date valeur'
-    FACTURE = 'Fact.'
-    STATUT_FACTURE = 'Statut facture'
-    COMPTA = 'Compta'
-    LIBELLE = 'Libellé'
-    NUMERO = 'N°'
-    MEMBRE = 'Membre'
-    ACTIF = 'Actif'
-    CAT = 'Cat.'
-    DATE_ECHEANCE = 'Date éch.'
-    PROCHAINE_ECHEANCE = 'Proch. éch.'
-    PAYE_LE = 'Payé le'
-    MONTANT_TOTAL = 'Mont. total'
-    SOLDE = 'Solde'
-    MONTANT_A_PAYER = 'Montant à payer'
-    PAYE = 'Payé'
-    MONTANT_SOLDE = 'Montant soldé'
-    EXPEDITION_FACT = 'Expédition des factures'
-    LICENSIE = 'Licencié'
-    EMAIL = 'Email 1'
-    ECHELONNEMENT = 'Echelonnement'
-    ENVOI_ERREUR = 'Envoi en erreur'
-    SUIVI = 'Suivi'
-    OVERDUE = 'Overdue'
+    SAISON = "Saison"
+    DATE_VALEUR = "Date valeur"
+    FACTURE = "Fact."
+    STATUT_FACTURE = "Statut facture"
+    COMPTA = "Compta"
+    LIBELLE = "Libellé"
+    NUMERO = "N°"
+    MEMBRE = "Membre"
+    ACTIF = "Actif"
+    CAT = "Cat."
+    DATE_ECHEANCE = "Date éch."
+    PROCHAINE_ECHEANCE = "Proch. éch."
+    PAYE_LE = "Payé le"
+    MONTANT_TOTAL = "Mont. total"
+    SOLDE = "Solde"
+    MONTANT_A_PAYER = "Montant à payer"
+    PAYE = "Payé"
+    MONTANT_SOLDE = "Montant soldé"
+    EXPEDITION_FACT = "Expédition des factures"
+    LICENSIE = "Licencié"
+    EMAIL = "Email 1"
+    ECHELONNEMENT = "Echelonnement"
+    ENVOI_ERREUR = "Envoi en erreur"
+    SUIVI = "Suivi"
+    OVERDUE = "Overdue"
 
 class ColumnTypes(str, enum.Enum):
-    STRING = 'str'
-    FLOAT = 'float64'
-    INT = 'int64'
-    BOOLEAN = 'bool'
+    STRING = "str"
+    FLOAT = "float64"
+    INT = "int64"
+    BOOLEAN = "bool"
 
 
 class ColumnToTypeWrapper(NamedTuple):
@@ -79,11 +79,17 @@ class EmailAttributes(str, enum.Enum):
     ROLE = "Trésorière HBC Nyon"
 
 class LibelleToStr(str, enum.Enum):
-    TRANCHE = 'tranche'
-    TRANCHE_DE = TRANCHE + ' ' + 'de'
+    TRANCHE = "tranche"
+    TRANCHE_DE = TRANCHE + " " + "de"
     COTISATION = "la cotisation annuelle"
     ARTICLE = "votre achat"
 
 class FireBase(str, enum.Enum):
-    PROJECT_ID = 'cogito-accounting'
+    PROJECT_ID = "cogito-accounting"
     DATETIME_FORMAT = "%d/%m/%Y %H:%M:%S"
+    SAISON_21_22 = "2021-2022"
+    SCHEMA = "sent"
+    SENT_ID = "id"
+    SENT_NAME = "name"
+    SENT_SAISON = "saison"
+    SENT_DATE = "date"

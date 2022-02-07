@@ -2,8 +2,9 @@ import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from helper.class_enumerators import EmailAttributes, ColumnNames, LibelleToStr, PathNames
-from typing import Callable
+from helper.class_enumerators import EmailAttributes, ColumnNames, LibelleToStr, PathNames, FireBase
+from helper.firebase_config import Member
+from typing import Callable, List
 import keyring
 import pandas
 import re
@@ -22,11 +23,14 @@ class Email():
     def __init__(
         self,
         cwd: str,
+        firebase: Callable,
     ):
         """
         TODO: Initialize class with name, id
         """
         self.cwd = cwd
+        self.firebase = firebase
+        self.reminder_sent = self.firebase.collection(f'{FireBase.SCHEMA}')
 
     def check_condition(self, record: pandas.Series) -> Callable:
         """
@@ -63,7 +67,7 @@ class Email():
         
         return complement
 
-    def get_message(self):
+    def get_message(self) -> str:
         message = f'''
         Bonjour, 
 
@@ -116,9 +120,35 @@ class Email():
 
             print(f"Reminder sent to {self.record[ColumnNames.MEMBRE]}")
 
-        return None
+            self.write_to_db()
 
     def no_email(self):
         print(
             f"No reminder needed for {self.record[ColumnNames.MEMBRE]} - Skipping"
+        )
+
+    def collect_from_db(self) -> List[int]:
+        """
+        TODO: Add Docstring
+        """
+        # COLLECT #
+        # Note: Use of CollectionRef stream() is prefered to get()
+        past_reminders: List[int] = list() 
+        docs = self.reminder_sent.where(f'{FireBase.SENT_SAISON}', u'==', f'{FireBase.SAISON_21_22}').stream()
+        for doc in docs:
+            past_reminders.append(int(doc.id))
+        
+        return past_reminders
+
+    def write_to_db(self) -> None:
+        """
+        TODO: Add Docstring
+        """
+        # INSERT #
+        self.reminder_sent.document(f'{self.record[ColumnNames.FACTURE]}').set(
+            Member(
+                f'{self.record[ColumnNames.NUMERO]}',
+                f'{self.record[ColumnNames.MEMBRE]}',
+                f'{self.record[ColumnNames.SAISON]}',
+            ).to_dict()
         )
