@@ -4,7 +4,9 @@ from typing import NamedTuple
 
 class PathNames(str, enum.Enum):
     DATA_FOLDER = "data"
-    PDF_FOLDER = "output/PDFs"
+    OUTPUT_FOLDER = "output"
+    PDF_FOLDER = "PDFs"
+    STATUS_FOLDER = "status"
     EXCEL_FILE = "factures_dev"
     PDF_FILE = "All_PDFs"
 
@@ -86,9 +88,10 @@ class LibelleToStr(str, enum.Enum):
 
 class FireBase(str, enum.Enum):
     PROJECT_ID = "cogito-accounting"
+    SCHEMA_INVOICE = "no_invoice"
+    SCHEMA_SENT = "sent"
     DATETIME_FORMAT = "%d/%m/%Y %H:%M:%S"
     SAISON_21_22 = "2021-2022"
-    SCHEMA = "sent"
     SENT_ID = "id"
     SENT_NAME = "name"
     SENT_SAISON = "saison"

@@ -27,8 +27,8 @@ class Member(object):
     self,
     id: int,
     name: str,
-    saison: str,
-    date=datetime.datetime.now(),
+    saison: str = class_enumerators.FireBase.SAISON_21_22,
+    date: datetime.datetime = datetime.datetime.now(),
   ):
     self.id = id
     self.name = name

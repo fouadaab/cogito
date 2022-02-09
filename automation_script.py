@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from helper import data_source, pdf_splitter, class_enumerators, email_api, firebase_config
+from helper import data_source, pdf_splitter, class_enumerators, email_api, firebase_config, write_out
 
 cwd = os.path.abspath(os.path.dirname(__file__))
 
@@ -25,19 +25,26 @@ if __name__ == "__main__":
     # Split invoices and write in PDF output folder
     write_pdfs = pdf_splitter.PdfWriter(
         cwd=cwd,
-        names=df[class_enumerators.ColumnNames.MEMBRE],
+        firebase=db,
         ids=df[class_enumerators.ColumnNames.NUMERO],
+        names=df[class_enumerators.ColumnNames.MEMBRE],
+        invoice_ids=df[class_enumerators.ColumnNames.FACTURE],
     )
-    print(f"Members for which we could not generate a PDF invoice: {write_pdfs.not_found}")
 
-    # Filter out DF using DB collect -> collect past reminders
-    already_sent = email_object.collect_from_db()
-    df = df[~df[class_enumerators.ColumnNames.FACTURE].isin(already_sent)]
+    # Get filter list of members to exclude from reminders
+    pdfs_not_found = write_pdfs.not_found
+    already_sent = list(email_object.collect_from_db().keys())
+    filter_out = set(pdfs_not_found + already_sent)
+
+    # Filter out DF using DB collect -> collect past reminders + Missing Invoice
+    df = df[~df[class_enumerators.ColumnNames.FACTURE].isin(filter_out)]
     
     # Send out emails to each overdue member
     df = df.apply(lambda x: email_object.check_condition(x), axis=1)
     
-    # TODO: Add extract to output -> Updated status after script run
+    # Add extract to output -> Updated status after script run
+    status = email_object.collect_from_db(schema=class_enumerators.FireBase.SCHEMA_SENT)
+    write_out.CurrentStatus(cwd, status)
 
     print("Successfully Completed Automation Script")
 
