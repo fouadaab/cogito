@@ -2,8 +2,7 @@ import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from helper.class_enumerators import EmailAttributes, ColumnNames, LibelleToStr, PathNames, FireBase
-from helper.firebase_config import Member
+from enums.class_enumerators import EmailAttributes, ColumnNames, LibelleToStr, PathNames, FireBase
 from typing import Callable, Dict, Any
 import keyring
 import pandas
@@ -117,39 +116,16 @@ class Email():
             # send the message via the server set up earlier.
             s.send_message(msg)
 
-            print(f"Reminder sent to {self.record[ColumnNames.MEMBRE]}")
+            self.firebase.insert_db(
+                FireBase.SCHEMA_SENT,
+                self.record[ColumnNames.FACTURE],
+                self.record[ColumnNames.NUMERO],
+                self.record[ColumnNames.MEMBRE],
+            )
 
-            self.write_to_db(schema=FireBase.SCHEMA_SENT)
+            print(f"Reminder sent to {self.record[ColumnNames.MEMBRE]}: Invoice N°{self.record[ColumnNames.FACTURE]}")
 
     def no_email(self):
         print(
             f"No reminder needed for {self.record[ColumnNames.MEMBRE]} - Skipping"
-        )
-
-    def collect_from_db(self, schema: str = FireBase.SCHEMA_SENT) -> Dict[int, Dict[str, Any]]:
-        """
-        TODO: Add Docstring
-        """
-        # COLLECT FROM FIREBASE DB #
-        # Note: Use of CollectionRef stream() is prefered to get()
-        _collection = self.firebase.collection(f'{schema}')
-        past_reminders = dict() 
-        docs = _collection.where(f'{FireBase.SENT_SAISON}', u'==', f'{FireBase.SAISON_21_22}').stream()
-        for doc in docs:
-            past_reminders[int(doc.id)] = doc.to_dict()
-        
-        return past_reminders
-
-    def write_to_db(self, schema: str) -> None:
-        """
-        TODO: Add Docstring
-        """
-        # INSERT INTO FIREBASE DB: SENT #
-        _collection = self.firebase.collection(f'{schema}')
-        _collection.document(f'{self.record[ColumnNames.FACTURE]}').set(
-            Member(
-                f'{self.record[ColumnNames.NUMERO]}',
-                f'{self.record[ColumnNames.MEMBRE]}',
-                f'{self.record[ColumnNames.SAISON]}',
-            ).to_dict()
         )

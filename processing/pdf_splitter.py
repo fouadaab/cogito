@@ -1,7 +1,6 @@
 from PyPDF2 import PdfFileWriter, PdfFileReader
 from typing import Callable, List
-import helper.class_enumerators as class_enumerators
-from helper.firebase_config import Member
+import enums.class_enumerators as class_enumerators
 import pandas
 import re
 import os
@@ -63,13 +62,11 @@ class PdfWriter():
             else:
                 not_found.append(invoice_id)
 
-                # INSERT INTO FIREBASE DB: INVOICE #
-                _collection = self.firebase.collection(f'{class_enumerators.FireBase.SCHEMA_INVOICE}')
-                _collection.document(f'{invoice_id}').set(
-                    Member(
-                        f'{id}',
-                        f'{name}',
-                    ).to_dict()
+                self.firebase.insert_db(
+                    class_enumerators.FireBase.SCHEMA_INVOICE,
+                    invoice_id,
+                    id,
+                    name,
                 )
         
         self.not_found = not_found

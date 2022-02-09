@@ -6,6 +6,7 @@ class PathNames(str, enum.Enum):
     DATA_FOLDER = "data"
     OUTPUT_FOLDER = "output"
     PDF_FOLDER = "PDFs"
+    FIREBASE_FOLDER = "firebase"
     STATUS_FOLDER = "status"
     EXCEL_FILE = "factures_dev"
     PDF_FILE = "All_PDFs"

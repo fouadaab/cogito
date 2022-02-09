@@ -2,7 +2,7 @@ import os
 import csv
 from typing import Dict, Any
 from datetime import date
-import helper.class_enumerators as class_enumerators
+import enums.class_enumerators as class_enumerators
 
 
 class CurrentStatus(object):

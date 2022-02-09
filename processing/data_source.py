@@ -1,7 +1,7 @@
 import os
 import datetime
 import pandas as pd
-import helper.class_enumerators as class_enumerators
+import enums.class_enumerators as class_enumerators
 
 
 class Data():

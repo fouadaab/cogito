@@ -1,24 +1,6 @@
-# https://console.cloud.google.com/firestore/data/{collection_name}/{document_name}?project={project_id}
-# https://console.developers.google.com/apis/api/firestore.googleapis.com/metrics?project={project_id}&authuser=1
-from typing import Callable, Dict, Any
-import firebase_admin
-from firebase_admin import credentials
-from firebase_admin import firestore
+from enums import class_enumerators
+from typing import Dict, Any
 import datetime
-import helper.class_enumerators as class_enumerators
-
-class Database():
-  db: Callable
-
-  def __init__(self, key: str):
-    self.key = key
-    self.db_client()
-
-  def db_client(self) -> None:
-    # Use a service account with Firebase DB
-    cred = credentials.Certificate(self.key)
-    firebase_admin.initialize_app(cred)
-    self.db = firestore.client()
 
 
 class Member(object):
@@ -47,4 +29,3 @@ class Member(object):
               {class_enumerators.FireBase.SENT_DATE}={self.date}\
           )'
       )
-
