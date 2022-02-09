@@ -9,12 +9,12 @@ class Member(object):
     self,
     id: int,
     name: str,
-    saison: str = class_enumerators.FireBase.SAISON_21_22,
+    season: str = class_enumerators.FireBase.CURRENT_SEASON,
     date: datetime.datetime = datetime.datetime.now(),
   ):
     self.id = id
     self.name = name
-    self.saison = saison
+    self.season = season
     self.date = date.strftime(class_enumerators.FireBase.DATETIME_FORMAT)
 
   def to_dict(self) -> Dict[str, Any]:
@@ -25,7 +25,7 @@ class Member(object):
           f'Member(\
               {class_enumerators.FireBase.SENT_ID}={self.id}, \
               {class_enumerators.FireBase.SENT_NAME}={self.name}, \
-              {class_enumerators.FireBase.SENT_SAISON}={self.saison}, \
+              {class_enumerators.FireBase.SENT_SEASON}={self.season}, \
               {class_enumerators.FireBase.SENT_DATE}={self.date}\
           )'
       )

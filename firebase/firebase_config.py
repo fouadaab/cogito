@@ -46,7 +46,7 @@ class Database():
     # Note: Use of CollectionRef stream() is prefered to get()
     _collection = self.db.collection(f'{schema}')
     past_reminders = dict() 
-    docs = _collection.where(f'{class_enumerators.FireBase.SENT_SAISON}', u'==', f'{class_enumerators.FireBase.SAISON_21_22}').stream()
+    docs = _collection.where(f'{class_enumerators.FireBase.SENT_SEASON}', u'==', f'{class_enumerators.FireBase.CURRENT_SEASON}').stream()
     for doc in docs:
         past_reminders[int(doc.id)] = doc.to_dict()
     

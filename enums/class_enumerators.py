@@ -1,15 +1,19 @@
 import enum
 from typing import NamedTuple
+import configparser
+
+config = configparser.ConfigParser()
+config.read('conf.ini')
 
 
 class PathNames(str, enum.Enum):
-    DATA_FOLDER = "data"
-    OUTPUT_FOLDER = "output"
-    PDF_FOLDER = "PDFs"
-    FIREBASE_FOLDER = "firebase"
-    STATUS_FOLDER = "status"
-    EXCEL_FILE = "factures_dev"
-    PDF_FILE = "All_PDFs"
+    DATA_FOLDER = config['PATHNAMES']['DATA_FOLDER']
+    OUTPUT_FOLDER = config['PATHNAMES']['OUTPUT_FOLDER']
+    PDF_FOLDER = config['PATHNAMES']['PDF_FOLDER']
+    FIREBASE_FOLDER = config['PATHNAMES']['FIREBASE_FOLDER']
+    STATUS_FOLDER = config['PATHNAMES']['STATUS_FOLDER']
+    EXCEL_FILE = config['PATHNAMES']['EXCEL_FILE']
+    PDF_FILE = config['PATHNAMES']['PDF_FILE']
 
 class ColumnNames(str, enum.Enum):
     SAISON = "Saison"
@@ -76,10 +80,10 @@ class GetColumnToType(enum.Enum):
     SUIVI = ColumnToTypeWrapper(ColumnNames.SUIVI, ColumnTypes.STRING)
 
 class EmailAttributes(str, enum.Enum):
-    NAMESPACE = "hotmail"
-    ENTRY = "frank.nore@hotmail.com"
-    SENDER = "Susana Freire"
-    ROLE = "Trésorière HBC Nyon"
+    NAMESPACE = config['EMAILATTRIBUTES']['NAMESPACE']
+    ENTRY = config['EMAILATTRIBUTES']['ENTRY']
+    SENDER = config['EMAILATTRIBUTES']['SENDER']
+    ROLE = config['EMAILATTRIBUTES']['ROLE']
 
 class LibelleToStr(str, enum.Enum):
     TRANCHE = "tranche"
@@ -88,12 +92,12 @@ class LibelleToStr(str, enum.Enum):
     ARTICLE = "votre achat"
 
 class FireBase(str, enum.Enum):
-    PROJECT_ID = "cogito-accounting"
-    SCHEMA_INVOICE = "no_invoice"
-    SCHEMA_SENT = "sent"
+    PROJECT_ID = config['FIREBASE']['PROJECT_ID']
+    SCHEMA_INVOICE = config['FIREBASE']['SCHEMA_INVOICE']
+    SCHEMA_SENT = config['FIREBASE']['SCHEMA_SENT']
+    CURRENT_SEASON = config['FIREBASE']['CURRENT_SEASON']
     DATETIME_FORMAT = "%d/%m/%Y %H:%M:%S"
-    SAISON_21_22 = "2021-2022"
     SENT_ID = "id"
     SENT_NAME = "name"
-    SENT_SAISON = "saison"
+    SENT_SEASON = "season"
     SENT_DATE = "date"

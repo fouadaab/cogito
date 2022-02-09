@@ -21,9 +21,8 @@ if __name__ == "__main__":
     email_object = email_api.Email(cwd, firebase)
 
     # Collect input data and write in Pandas DataFrame
-    data_object = data_source.Data(cwd)
-    df = data_object.read_data()
-
+    df = data_source.Data(cwd).read_data()
+    
     # Split invoices and write in PDF output folder
     write_pdfs = pdf_splitter.PdfWriter(
         cwd=cwd,
@@ -45,7 +44,9 @@ if __name__ == "__main__":
     df = df.apply(lambda x: email_object.check_condition(x), axis=1)
     
     # Add extract to output -> Updated status after script run
-    status = firebase.collect_from_db()
-    write_out.CurrentStatus(cwd, status)
+    write_out.CurrentStatus(
+        cwd,
+        firebase.collect_from_db(),
+    )
 
     print("Successfully Completed Automation Script")

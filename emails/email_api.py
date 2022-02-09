@@ -3,7 +3,7 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from enums.class_enumerators import EmailAttributes, ColumnNames, LibelleToStr, PathNames, FireBase
-from typing import Callable, Dict, Any
+from typing import Callable
 import keyring
 import pandas
 import re
@@ -99,6 +99,7 @@ class Email():
             attachment = os.path.abspath(
                 os.path.join(
                     self.cwd,
+                    PathNames.OUTPUT_FOLDER,
                     PathNames.PDF_FOLDER,
                     f"Facture-{self.record[ColumnNames.MEMBRE]}-{self.record[ColumnNames.NUMERO]}.pdf",
                 )
