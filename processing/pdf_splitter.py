@@ -6,9 +6,6 @@ import re
 import os
 
 class PdfWriter():
-    """
-    TODO: update not_found after inital DEV phase
-    """
     not_found: List[int]
 
     def __init__(
@@ -19,6 +16,14 @@ class PdfWriter():
         names: pandas.Series,
         invoice_ids: pandas.Series,
     ):
+        """
+        Args:
+            cwd (str): current working directory's location (full path)
+            firebase (class instance / Callable): Firebase DB client
+            ids (pandas.Series): Column of client ids from client DF
+            names (pandas.Series): Column of client names from client DF
+            invoice_ids (pandas.Series): Column of invoice ids from client DF
+        """
         self.cwd = cwd
         self.firebase = firebase
         self.file_name = os.path.abspath(
@@ -31,10 +36,19 @@ class PdfWriter():
         self.ids = ids
         self.names = names
         self.invoice_ids = invoice_ids
-        self.getPagebreakList()
+        self.page_break()
 
-    def getPagebreakList(self) -> None:
-
+    def page_break(self) -> None:
+        """
+        Break the PDF containing all clients' invoices into singular invoices (1 for each customer)
+        Write the resulting PDFs in the appropriate folder (output defined in class_enumerators.py)
+        Write the data for clients that could not be matched into the invoice table in Firebase DB
+        Populate the object not_found to be used in main script as a filter criteria: filter out unmatched clients
+        Args:
+            [None]
+        Returns:
+            [None]
+        """
         not_found = list()
         pdf_file = PdfFileReader(self.file_name)
         num_pages = pdf_file.getNumPages()
@@ -70,5 +84,4 @@ class PdfWriter():
                 )
         
         self.not_found = not_found
-
         return None

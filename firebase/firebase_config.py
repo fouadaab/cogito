@@ -10,14 +10,23 @@ from pathlib import Path
 
 
 class Database():
+  """
+  Google Firebase DB client object
+  """
   db: Callable
 
   def __init__(self, key: str):
+    """
+    Args:
+        key (str): Google Firebase DB's key file location (full path)
+    """
     self.key = key
     self.db_client()
 
   def db_client(self) -> None:
-    # Use a service account with Firebase DB
+    """
+    Use a service account with Firebase DB
+    """
     cred = credentials.Certificate(self.key)
     firebase_admin.initialize_app(cred)
     self.db = firestore.client()
@@ -29,7 +38,15 @@ class Database():
     id: int,
     name: str,
   ) -> None:
-    # INSERT INTO FIREBASE DB #
+    """
+    Insert into Firebase DB
+    Use member.Member object to inject client's data in the right table
+    Args:
+      schema (str): Name of the table to write into in Firebase
+      invoice_id (int): Invoice number of the current client
+      id (int): Unique identifier of the current client
+      name (str): Name of the current client
+    """
     _collection = self.db.collection(f'{schema}')
     _collection.document(f'{invoice_id}').set(
         Member(
@@ -40,10 +57,16 @@ class Database():
 
   def collect_from_db(self, schema: str = class_enumerators.FireBase.SCHEMA_SENT) -> Dict[int, Dict[str, Any]]:
     """
-    TODO: Add Docstring
+    Collect from Firebase DB
+    Note: Use of CollectionRef stream() is prefered to get()
+    Args:
+      schema (str): Name of the table to look up in Firebase
+    Returns:
+      [Dict[int, Dict[str, Any]]]: the extract from the Firebase DB
+      For every item in the Dict:
+        - The key is the invoice N° (serving in DB as PK)
+        - The value is a Dict containing the client details and timestamp
     """
-    # COLLECT FROM FIREBASE DB #
-    # Note: Use of CollectionRef stream() is prefered to get()
     _collection = self.db.collection(f'{schema}')
     past_reminders = dict() 
     docs = _collection.where(f'{class_enumerators.FireBase.SENT_SEASON}', u'==', f'{class_enumerators.FireBase.CURRENT_SEASON}').stream()
@@ -54,7 +77,13 @@ class Database():
 
 
 def initialize_firebase() -> Callable:
-
+  """
+  Initialize the Firebase DB
+  Args:
+    [None]
+  Returns:
+    [Callable]: Firebase DB client
+  """
   p = Path(f'./{class_enumerators.PathNames.FIREBASE_FOLDER}')
   matches = p.glob(f'{class_enumerators.FireBase.PROJECT_ID}*.json')
   for i, match in enumerate(matches):

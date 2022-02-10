@@ -6,9 +6,14 @@ import enums.class_enumerators as class_enumerators
 
 class Data():
     """
-    TODO: Add Dodstring
+    Data class object (store client's data from Excel in a pandas DatFrame)
     """
+
     def __init__(self, cwd: str):
+        """
+        Args:
+            cwd (str): current working directory's location (full path)
+        """
         data_file = f"{class_enumerators.PathNames.EXCEL_FILE}.xls"
         self.xls_path = os.path.abspath(
             os.path.join(
@@ -35,7 +40,16 @@ class Data():
 
     def read_data(self) -> pd.DataFrame:
         """
-        TODO: Add Docstring
+        Read data using pandas method read_excel()
+        Data types are defined in class_enumerators.GetColumnToType
+        We define the columns that will be parsed as dates -> parse_dates object
+        A custom method date_parser() is used to employ the desired format
+        Data attribute OVERDUE is generated based on the time difference (days) between today and DATE_ECHEANCE
+
+        Args:
+            [None]
+        Returns:
+            [None]
         """
         df = pd.read_excel(
                 self.xls_path,
@@ -44,5 +58,4 @@ class Data():
                 date_parser=self.date_parser
             )
         df[class_enumerators.ColumnNames.OVERDUE] = df[class_enumerators.ColumnNames.DATE_ECHEANCE].apply(self.date_diff)
-
         return df

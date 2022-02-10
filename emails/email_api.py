@@ -2,7 +2,7 @@ import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from enums.class_enumerators import EmailAttributes, ColumnNames, LibelleToStr, PathNames, FireBase
+from enums.class_enumerators import EmailAttributes, ColumnNames, LibelleToStr, PathNames, FireBase, OverdueInvoice
 from typing import Callable
 import keyring
 import pandas
@@ -16,34 +16,45 @@ cred = keyring.get_credential(
 )
 
 class Email():
-    """
-    TODO: Add Docstring
-    """
+
     def __init__(
         self,
         cwd: str,
         firebase: Callable,
     ):
         """
-        TODO: Initialize class with name, id
+        Args:
+            cwd (str): current working directory's location (full path)
+            firebase (class instance / Callable): Firebase DB client
         """
         self.cwd = cwd
         self.firebase = firebase
 
     def check_condition(self, record: pandas.Series) -> Callable:
         """
-        TODO: Add Docstring
+        Condition to check whether to send an email or skip to next client
+        Depends on "OVERDUE" attribute in the input variable
+        Args:
+            record (pandas.Series): Input row containing current client's data
+        Returns:
+            [Callable]: Method send_email() if invoice is overdue, otherwise no_email() 
         """
         self.record = record
-
-        if self.record[ColumnNames.OVERDUE] >= 30:
+        if self.record[ColumnNames.OVERDUE] > OverdueInvoice.LIMIT:
             return self.send_email()
         else:
             return self.no_email()
 
     def regex_match(self, x: str) -> str:
         """
-        TODO: Add docstring
+        Column LIBELLE in client's data defines the choice of words to include in the message
+            - If LIBELLE is a yearly membership/subscription: return "la cotisation annuelle {year_of_season}"
+            - If LIBELLE is a partial membership/subscription: return "la {N-ème} tranche de cotisations {year_of_season}"
+            - If LIBELLE is an item invoice: return "votre achat"
+        Args:
+            x (str): LIBELLE attribute of input row containing current client's data
+        Returns:
+            [str]: piece of sentence conditioned by the value of attribute self.record[ColumnNames.LIBELLE]
         """
         if re.match(r'^Cotisations.*', x):
             return LibelleToStr.COTISATION + " " + self.record[ColumnNames.SAISON]
@@ -56,31 +67,46 @@ class Email():
 
     def conditional_complement(self, x: str) -> str:
         """
-        TODO: Add docstring
+        Place an additional message in the body of the email depending on the LIBELLE
+            - If the nature of the invoice does NOT refer to a purchase (item): return the complementary body text
+            - Otherwise: return a line break
+        Args:
+            x (str): LIBELLE attribute of input row containing current client's data
+        Returns:
+            [str]: Additional piece of sentence to attach to the email
         """
         complement = '\n'
-    
         if self.regex_match(x) != LibelleToStr.ARTICLE:
             complement += "\nSi jamais vous deviez faire face à des difficultés financières, je vous remercie de bien vouloir prendre contact, en toute confidentialité, avec moi ou l'un des membres du comité et nous vous orienterons alors vers une association à même de vous aider financièrement.\n"
-        
         return complement
 
     def get_message(self) -> str:
+        """
+        Main body of the email, fill with client data stored in Email class object self.record
+        Args:
+            [None]
+        Returns:
+            [None]
+        """
         message = f'''
         Bonjour, 
 
         Je me permets de vous contacter car le HBC Nyon est toujours en attente du paiement de la facture N° {self.record[ColumnNames.FACTURE]} d'un montant de CHF {self.record[ColumnNames.MONTANT_A_PAYER]}-- (dont vous trouverez une copie en pièce jointe) et relative à {self.regex_match(self.record[ColumnNames.LIBELLE])}. {self.conditional_complement(self.record[ColumnNames.LIBELLE])}
         Vous remerciant par avance de votre compréhension et de votre intervention et restant bien évidemment à votre disposition, je vous prie de bien vouloir agréer l'expression de mes sincères salutations. \n
 
-        {EmailAttributes.SENDER} - {EmailAttributes.ROLE}
-        '''
+        {EmailAttributes.SENDER} - {EmailAttributes.ROLE}'''
         return message
 
     def send_email(self) -> None:
         """
-        TODO: Add Docstring
+        Send an email to the current client (data stored in Email class object self.record)
+        Get the attachment - associated PDF invoice for the current client -
+        Write into Firebase DB with timestamp to keep track, with invoice N° as primary key
+        Args:
+            [None]
+        Returns:
+            [None]
         """
-
         with smtplib.SMTP("smtp.outlook.com", 587) as s:  # Change smtp for Outlook
             s.starttls()
             s.login(cred.username, cred.password)

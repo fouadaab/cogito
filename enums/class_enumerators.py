@@ -101,3 +101,6 @@ class FireBase(str, enum.Enum):
     SENT_NAME = "name"
     SENT_SEASON = "season"
     SENT_DATE = "date"
+
+class OverdueInvoice(enum.IntEnum):
+    LIMIT = config['OVERDUE']['LIMIT']

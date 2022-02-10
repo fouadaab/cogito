@@ -4,6 +4,9 @@ import datetime
 
 
 class Member(object):
+  """
+  Class object in which we write the client data that will be uploaded to Firebase DB
+  """
 
   def __init__(
     self,
