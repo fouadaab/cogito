@@ -1,0 +1,93 @@
+@startuml Cogito
+
+!include <awslib/AWSCommon>
+' !include <awslib/AWSSimplified>
+!include <awslib/Database/DynamoDB>
+
+allowmixing
+top to bottom direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+
+actor :Clients Needing Reminder: as Reminders
+actor :Clients Already Reminded or with Missing Invoice: as Filters
+
+abstract class CogitoServer as "Cogito Server" {
+    #Data: Accounting data sheet
+    #Invoices: PDF of outstanding bills
+}
+class ConfigFile as "Config File" {
+    +conf.ini
+    #Paths: Names
+    #Email: Attributes
+    #Google: Firebase
+    #Overdue: Limit
+}
+class Enums {
+    +class_enumerators.py
+    #Enumumerator class defining constants in the code
+}
+class DataInputFolder as "Data (Input Folder)" {
+    +EXCEL_FILE.xls: 1
+    +PDF_FILE.pdf: 2
+    #1: Contains all clients raw data
+    #2: Contains all invoices
+}
+class Processing {
+    +data_source.py: 1
+    +pdf_splitter.py: 2
+    #1: Sourcing: Read data into pandas DataFrame
+    Overdue: Add overdue attribute = Today - Due Date
+    #2: Split PDF invoices into singular PDFs to output folder
+}
+class Firebase {
+    +firebase_config.py: 1
+    +member.py: 2
+    +write_out.py: 3
+    +{cogito_project_id}*.json: 4
+    #1: Google Firebase DB client: Extract & Insert
+    #2: Member object constructor to insert into DB
+    #3: Python method to write out DB extract into output folder in csv format
+    #4: Firebase DB key file
+}
+class Emails {
+    +email_api.py
+    - Check condition based on OVERDUE attribute
+    - If OVERDUE < 30 days -> Skip Client
+    - Otherwise, construct client to email API + send out email with invoice as attachment
+    - Write out client details to Firebase DB with current timestamp
+}
+class Output {
+    +status/{Date}.csv
+    #Extract from Firebase DB of all clients to which past/new reminders were sent out
+}
+
+DynamoDB(FirebaseDB, "Google Firebase DB", "one entry per user")
+class EmailAPI as "Email API" {
+  <size:20><&envelope-closed></size> -> Sent from Box to Clients
+}
+
+' ---------------------- '
+
+ConfigFile --|> Enums
+
+Enums --> DataInputFolder
+Enums --> Processing
+Enums --> Emails
+Enums --> Firebase
+
+CogitoServer --|> DataInputFolder
+DataInputFolder --|> Processing
+Processing --|> Reminders
+Reminders --|> Emails
+
+Processing --|> Firebase
+Firebase --|> FirebaseDB
+
+Emails --|> Firebase
+Emails --|> EmailAPI
+
+FirebaseDB --|> Filters
+Filters --|> Output
+
+@enduml
