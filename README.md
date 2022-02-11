@@ -28,3 +28,6 @@ It should include a minimum of two files: <br>
 
 The name of those files should match "EXCEL_FILE" and "PDF_FILE" attributes in the config file. <br>
 
+**Full documentation of the code below**: <br>
+
+![Plantuml Diagram](https://github.com/fouadaabid/cogito/blob/main/docs/Documentation_plantuml.png?raw=true)
