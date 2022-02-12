@@ -83,7 +83,7 @@ class EmailAttributes(str, enum.Enum):
     NAMESPACE = config['EMAILATTRIBUTES']['NAMESPACE']
     ENTRY = config['EMAILATTRIBUTES']['ENTRY']
     SENDER = config['EMAILATTRIBUTES']['SENDER']
-    ROLE = config['EMAILATTRIBUTES']['ROLE']
+    ROLE = "Trésorière HBC Nyon"
 
 class LibelleToStr(str, enum.Enum):
     TRANCHE = "tranche"
@@ -104,3 +104,7 @@ class FireBase(str, enum.Enum):
 
 class OverdueInvoice(enum.IntEnum):
     LIMIT = config['OVERDUE']['LIMIT']
+    
+class OperatingSystem(str, enum.Enum):
+    WINDOWS = "Windows"
+    LINUX = "Linux"

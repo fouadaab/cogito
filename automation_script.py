@@ -49,4 +49,4 @@ if __name__ == "__main__":
         firebase.collect_from_db(),
     )
 
-    print("Successfully Completed Automation Script")
+    print("\n Successfully Completed Automation Script \n")

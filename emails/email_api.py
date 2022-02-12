@@ -2,8 +2,9 @@ import smtplib
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from enums.class_enumerators import EmailAttributes, ColumnNames, LibelleToStr, PathNames, FireBase, OverdueInvoice
+from enums.class_enumerators import EmailAttributes, ColumnNames, LibelleToStr, PathNames, FireBase, OverdueInvoice, OperatingSystem
 from typing import Callable
+import platform
 import keyring
 import pandas
 import re
@@ -96,6 +97,20 @@ class Email():
 
         {EmailAttributes.SENDER} - {EmailAttributes.ROLE}'''
         return message
+    
+    def path_split(self) -> str:
+        """
+        Paths in Windows are separated by a black slash
+        In Unix systems, forward slash is used
+        Args:
+            [None]
+        Returns:
+            [str]: Forward slash for Unix system, back slash for Windows OS
+        """
+        _splitter = "/"
+        if platform.system() == OperatingSystem.WINDOWS:
+            _splitter = "\\"
+        return _splitter
 
     def send_email(self) -> None:
         """
@@ -137,7 +152,7 @@ class Email():
             # attach pdf to email
             with open(attachment, "rb") as f:
                 attach = MIMEApplication(f.read(),_subtype="pdf")
-            attach.add_header('Content-Disposition', 'attachment', filename=attachment.split('/')[-1])
+            attach.add_header('Content-Disposition', 'attachment', filename=attachment.split(self.path_split())[-1])
             msg.attach(attach)
 
             # send the message via the server set up earlier.
