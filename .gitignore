@@ -12,6 +12,9 @@ virtual_env_ubuntu_20
 # firebase creds
 cogito-*.json
 
+# Instructions
+Instructions*
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
