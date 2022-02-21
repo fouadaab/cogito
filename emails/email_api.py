@@ -119,6 +119,7 @@ class Email():
             # setup the parameters of the message
             msg['From']=cred.username
             msg['To']=self.record[ColumnNames.EMAIL]
+            msg['Cc']=EmailAttributes.CC
             msg['Subject']=f"HBC Nyon - Retard de paiement {self.record[ColumnNames.MEMBRE]}"
 
             # Set up attachment folder

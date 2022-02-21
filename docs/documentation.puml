@@ -62,7 +62,7 @@ class Output {
     #Extract from Firebase DB of all clients to which past/new reminders were sent out
 }
 
-DynamoDB(FirebaseDB, "Google Firebase DB", "one entry per user")
+DynamoDB(FirebaseDB, "Google Firebase DB", "one entry per invoice")
 class EmailAPI as "Email API" {
   <size:20><&envelope-closed></size> -> Sent from Box to Clients
 }
