@@ -83,6 +83,7 @@ class EmailAttributes(str, enum.Enum):
     NAMESPACE = config['EMAILATTRIBUTES']['NAMESPACE']
     ENTRY = config['EMAILATTRIBUTES']['ENTRY']
     SENDER = config['EMAILATTRIBUTES']['SENDER']
+    CC = config['EMAILATTRIBUTES']['CC']
     ROLE = "Trésorière HBC Nyon"
 
 class LibelleToStr(str, enum.Enum):
